@@ -1,0 +1,20 @@
+{
+  "name": "COVIEWED ",
+  "version": "1.0",
+  "description": "An extension for classifying claims in coronavirus related articles",
+  "manifest_version": 2,
+  "permissions": ["activeTab"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_icon": "icons8-c-48.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["main.js"],
+      "matches": ["http://*/*"]
+    }
+  ]
+}
