@@ -1,5 +1,6 @@
-const node = document.body;
-processNode(node);
+!function () {
+  "use strict";
+  const node = document.body;
 
 function processNode(node) {
   if (node.text && node.text.includes("highlight")) {
@@ -47,3 +48,37 @@ function processNode(node) {
     }
   }
 }
+
+function getInputs() {
+
+  // add inputs here 
+  var inputs =  new Tensor(new Float32Array([1.0, 2.0, 3.0, 4.0]), "float32", [2, 2])
+  return inputs
+}
+
+function run_model() {
+  console.log('running_')
+   const myOnnxSession = new onnx.InferenceSession();
+      // load the ONNX model file
+      myOnnxSession.loadModel("https://drive.google.com/file/d/1sPQFC6arqwT_IwSNW-q4J9bvhCrECwvK/view?usp=sharing").then(() => {
+        // generate model input
+        const inferenceInputs = getInputs();
+        // execute the model
+        session.run(inferenceInputs).then(output => {
+          // consume the output
+          const outputTensor = output.values().next().value;
+          console.log(`model output tensor: ${outputTensor.data}.`);
+        });
+  });
+}
+
+function init(){
+  run_model()
+  processNode(node);
+}
+
+chrome.runtime.onMessage.addListener(function (messageBody, sender, sendResponse) {
+  init();
+ });
+
+}();
