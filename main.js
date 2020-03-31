@@ -60,7 +60,10 @@ function run_model() {
   console.log('running_')
    const myOnnxSession = new onnx.InferenceSession();
       // load the ONNX model file
-      myOnnxSession.loadModel("ml/bidaf-9.onnx").then(() => {
+      //
+      const model_url = chrome.runtime.getURL('ml/bidaf-9.onnx');
+
+      myOnnxSession.loadModel(model_url).then(() => {
         // generate model input
         const inferenceInputs = getInputs();
         // execute the model
