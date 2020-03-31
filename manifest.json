@@ -11,10 +11,14 @@
   "browser_action": {
     "default_icon": "icons8-c-48.png"
   },
+  
   "content_scripts": [
     {
-      "js": ["main.js"],
-      "matches": ["http://*/*"]
+      "matches": [
+                "*://*/*"
+            ],
+      "js": ["onnx.js","main.js"],
+      "run_at": "document_end"
     }
   ]
 }
