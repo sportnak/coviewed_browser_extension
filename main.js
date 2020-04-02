@@ -1,9 +1,17 @@
 !(function() {
   "use strict";
   const node = document.body;
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 
   function processNode(node) {
-    if (node.text && node.text.includes("highlight")) {
+    if (node.text && node.text.includes("coronavirus")) {
       return;
     }
 
@@ -15,11 +23,13 @@
       var sentences = cldrSegmentation.sentenceSplit(node.innerHTML);
       const result = [];
       for (const sentence of sentences) {
-        if (sentence.indexOf("covid") !== -1) {
-          result.push(`<mark>${sentence}</mark>`);
-        } else {
-          result.push(sentence);
-        }
+        result.push(
+          `<mark style="background-color: ${getRandomColor()};">${sentence}</mark>`
+        );
+        // if (sentence.indexOf("coronavirus") !== -1) {
+        // } else {
+        //   result.push(sentence);
+        // }
       }
       node.innerHTML = result.join("");
       return;
