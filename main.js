@@ -1,4 +1,4 @@
-!(function() {
+function derp() {
   "use strict";
   const node = document.body;
   function getRandomColor() {
@@ -10,34 +10,82 @@
     return color;
   }
 
-  function processNode(node) {
-    if (node.text && node.text.includes("coronavirus")) {
-      return;
-    }
-
-    if (node.nodeName === "SCRIPT" || node.nodeName === "IMG") {
-      return;
-    }
-
-    if (node.children.length === 0) {
-      var sentences = cldrSegmentation.sentenceSplit(node.innerHTML);
-      const result = [];
-      for (const sentence of sentences) {
-        result.push(
-          `<mark style="background-color: ${getRandomColor()};">${sentence}</mark>`
-        );
-        // if (sentence.indexOf("coronavirus") !== -1) {
-        // } else {
-        //   result.push(sentence);
-        // }
-      }
-      node.innerHTML = result.join("");
-      return;
-    }
-
+  function processChild(node, sentenceMap) {
+    const children = {};
     for (let i = 0; i < node.children.length; i++) {
-      if (node.children[i]) {
-        processNode(node.children[i]);
+      var sentences = cldrSegmentation.sentenceSplit(
+        node.children[i].innerText || ""
+      );
+      const childMap = {};
+      for (const sentence of sentences) {
+        if (sentenceMap[sentence]) {
+          children[sentence] = node.children[i];
+          childMap[sentence] = node.children[i];
+        }
+      }
+
+      const childParsing = processChild(node.children[i], childMap);
+
+      for (const sentence of Object.keys(childMap)) {
+        if (
+          childParsing[sentence] &&
+          node.children[i].nodeName.toLowerCase() !== "img" &&
+          node.children[i].nodeName.toLowerCase() !== "iframe" &&
+          node.children[i].nodeName.toLowerCase() !== "script" &&
+          node.children[i].nodeName.toLowerCase() !== "style" &&
+          node.children[i].nodeName.toLowerCase() !== "svg" &&
+          node.children[i].nodeName.toLowerCase() !== "noscript" &&
+          node.children[i].nodeName.toLowerCase() !== "footer" &&
+          !node.children[i].innerHTML.startsWith("<mark")
+        ) {
+          console.log(sentence, node.children[i], node);
+          node.children[
+            i
+          ].innerHTML = `<mark style="background-color: ${getRandomColor()}">${
+            node.children[i].innerHTML
+          }</mark>`;
+        }
+      }
+    }
+
+    const result = {};
+    for (const sentence of Object.keys(sentenceMap)) {
+      if (!children[sentence]) {
+        // theoretically, this node contains the sentence cleanly.
+        // console.log(node, children[sentence], sentence);
+        result[sentence] = node;
+      }
+    }
+    return result;
+  }
+
+  function processNode(node) {
+    if (!node.innerText) {
+      return;
+    }
+
+    if (node.innerText) {
+      for (let i = 0; i < node.children.length; i++) {
+        if (
+          node.children[i].nodeName.toLowerCase() === "img" ||
+          node.children[i].nodeName.toLowerCase() === "iframe" ||
+          node.children[i].nodeName.toLowerCase() === "script" ||
+          node.children[i].nodeName.toLowerCase() === "style" ||
+          node.children[i].nodeName.toLowerCase() === "svg"
+        ) {
+          continue;
+        }
+
+        const sentenceMap = {};
+        var sentences = cldrSegmentation.sentenceSplit(
+          node.children[i].innerText
+        );
+
+        for (const sentence of sentences) {
+          sentenceMap[sentence] = node.children[i];
+        }
+
+        processChild(node.children[i], sentenceMap);
       }
     }
   }
@@ -82,4 +130,7 @@
   ) {
     init();
   });
-})();
+}
+
+derp();
+window.derp = derp;
