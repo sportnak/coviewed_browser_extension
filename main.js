@@ -10,6 +10,55 @@ function derp() {
     return color;
   }
 
+  function processChild(node, sentenceMap) {
+    const children = {};
+    for (let i = 0; i < node.children.length; i++) {
+      var sentences = cldrSegmentation.sentenceSplit(
+        node.children[i].innerText || ""
+      );
+      const childMap = {};
+      for (const sentence of sentences) {
+        if (sentenceMap[sentence]) {
+          children[sentence] = node.children[i];
+          childMap[sentence] = node.children[i];
+        }
+      }
+
+      const childParsing = processChild(node.children[i], childMap);
+
+      for (const sentence of Object.keys(childMap)) {
+        if (
+          childParsing[sentence] &&
+          node.children[i].nodeName.toLowerCase() !== "img" &&
+          node.children[i].nodeName.toLowerCase() !== "iframe" &&
+          node.children[i].nodeName.toLowerCase() !== "script" &&
+          node.children[i].nodeName.toLowerCase() !== "style" &&
+          node.children[i].nodeName.toLowerCase() !== "svg" &&
+          node.children[i].nodeName.toLowerCase() !== "noscript" &&
+          node.children[i].nodeName.toLowerCase() !== "footer" &&
+          !node.children[i].innerHTML.startsWith("<mark")
+        ) {
+          console.log(sentence, node.children[i], node);
+          node.children[
+            i
+          ].innerHTML = `<mark style="background-color: ${getRandomColor()}">${
+            node.children[i].innerHTML
+          }</mark>`;
+        }
+      }
+    }
+
+    const result = {};
+    for (const sentence of Object.keys(sentenceMap)) {
+      if (!children[sentence]) {
+        // theoretically, this node contains the sentence cleanly.
+        // console.log(node, children[sentence], sentence);
+        result[sentence] = node;
+      }
+    }
+    return result;
+  }
+
   function processNode(node) {
     if (!node.innerText) {
       return;
@@ -31,13 +80,12 @@ function derp() {
         var sentences = cldrSegmentation.sentenceSplit(
           node.children[i].innerText
         );
-        const instance = new Mark(node.children[i]);
+
         for (const sentence of sentences) {
-          instance.mark(sentence, {
-            acrossElements: true,
-            separateWordSearch: false
-          });
+          sentenceMap[sentence] = node.children[i];
         }
+
+        processChild(node.children[i], sentenceMap);
       }
     }
   }
