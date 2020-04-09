@@ -11,17 +11,13 @@
   "browser_action": {
     "default_icon": "icons8-c-48.png"
   },
-  
+
   "content_scripts": [
     {
-      "matches": [
-                "*://*/*"
-            ],
-      "js": ["onnx.js","cldr-segmentation.js","main.js"],
+      "matches": ["*://*/*"],
+      "js": ["onnx.js", "cldr-segmentation.js", "main.js", "mark.min.js"],
       "run_at": "document_end"
     }
   ],
-  "web_accessible_resources": [
-    "ml/*.onnx"
-  ]
+  "web_accessible_resources": ["ml/*.onnx"]
 }
