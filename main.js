@@ -10,67 +10,6 @@ function derp() {
     return color;
   }
 
-  function processChild(node, knownSentences) {
-    const totalSentences = {};
-    for (let i = 0; i < node.children.length; i++) {
-      const sentences = cldrSegmentation.sentenceSplit(
-        node.children[i].innerText || ""
-      );
-      const childMap = {};
-      for (const sentence of sentences) {
-        totalSentences[sentence] = true;
-        if (knownSentences[sentence]) {
-          childMap[sentence] = node.children[i];
-        }
-      }
-
-      const lost = processChild(node.children[i], childMap);
-      for (const sentence of Object.keys(childMap)) {
-        if (
-          lost[sentence] &&
-          node.children[i].nodeName.toLowerCase() !== "img" &&
-          node.children[i].nodeName.toLowerCase() !== "iframe" &&
-          node.children[i].nodeName.toLowerCase() !== "script" &&
-          node.children[i].nodeName.toLowerCase() !== "style" &&
-          node.children[i].nodeName.toLowerCase() !== "svg" &&
-          node.children[i].nodeName.toLowerCase() !== "noscript" &&
-          node.children[i].nodeName.toLowerCase() !== "footer"
-        ) {
-          node.children[
-            i
-          ].innerHTML = `<mark style="background-color: ${getRandomColor()}">${
-            node.children[i].innerHTML
-          }</mark>`;
-        }
-      }
-    }
-
-    const lostSentences = {};
-    // console.log(totalSentences, node);
-    for (const sentence of Object.keys(knownSentences)) {
-      if (
-        !totalSentences[sentence] &&
-        node.nodeName.toLowerCase() !== "img" &&
-        node.nodeName.toLowerCase() !== "iframe" &&
-        node.nodeName.toLowerCase() !== "script" &&
-        node.nodeName.toLowerCase() !== "style" &&
-        node.nodeName.toLowerCase() !== "svg" &&
-        node.nodeName.toLowerCase() !== "noscript" &&
-        node.nodeName.toLowerCase() !== "footer"
-      ) {
-        console.log(
-          node,
-          sentence,
-          totalSentences[sentence],
-          knownSentences[sentence]
-        );
-        lostSentences[sentence] = node;
-      }
-    }
-
-    return lostSentences;
-  }
-
   function processNode(node) {
     if (!node.innerText) {
       return;
@@ -92,12 +31,13 @@ function derp() {
         var sentences = cldrSegmentation.sentenceSplit(
           node.children[i].innerText
         );
-
+        const instance = new Mark(node.children[i]);
         for (const sentence of sentences) {
-          sentenceMap[sentence] = node.children[i];
+          instance.mark(sentence, {
+            acrossElements: true,
+            separateWordSearch: false
+          });
         }
-
-        processChild(node.children[i], sentenceMap);
       }
     }
   }
