@@ -38,12 +38,12 @@ function derp() {
           node.children[i].nodeName.toLowerCase() !== "footer" &&
           !node.children[i].innerHTML.startsWith("<mark")
         ) {
-          console.log(sentence, node.children[i], node);
-          node.children[
-            i
-          ].innerHTML = `<mark style="background-color: ${getRandomColor()}">${
-            node.children[i].innerHTML
-          }</mark>`;
+          // console.log(sentence, node.children[i], node);
+          // node.children[
+          //   i
+          // ].innerHTML = `<mark style="background-color: ${getRandomColor()}">${
+          //   node.children[i].innerHTML
+          // }</mark>`;
         }
       }
     }
@@ -52,7 +52,7 @@ function derp() {
     for (const sentence of Object.keys(sentenceMap)) {
       if (!children[sentence]) {
         // theoretically, this node contains the sentence cleanly.
-        // console.log(node, children[sentence], sentence);
+        console.log(children[sentence], sentence);
         result[sentence] = node;
       }
     }
