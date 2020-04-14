@@ -1,6 +1,7 @@
 function derp() {
   "use strict";
   const node = document.body;
+  var count = 0;
   function getRandomColor() {
     var letters = "0123456789ABCDEF";
     var color = "#";
@@ -51,9 +52,11 @@ function derp() {
     const result = {};
     for (const sentence of Object.keys(sentenceMap)) {
       if (!children[sentence]) {
+        count++;
         // theoretically, this node contains the sentence cleanly.
         console.log(children[sentence], sentence);
         result[sentence] = node;
+        //console.log(count);
       }
     }
     return result;
@@ -129,6 +132,7 @@ function derp() {
     sendResponse
   ) {
     init();
+    chrome.runtime.sendMessage({type: "setCount", count: count});
   });
 }
 
